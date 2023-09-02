@@ -152,8 +152,17 @@ if __name__ == '__main__':
     #            print(Fore.GREEN+'AI:',Fore.GREEN+CallTranslates(text))
     # else:
     #         # 翻译环境
-    dic = loadXml("D:/Work/ZR_4/Zhurong/Assets/Export/Map/map_101/config/config_xml/MultipleLanguage_cn.xml")
-    dic2 = {} #loadXml2("D:/Std/pythonProject1/Ch_Hant.xml")
-    # translateDic(dic,'Ch_En.xml','ch','en')
-    translateDic(dic, dic2, 'Ch_Hant.xml', 'zh-hans', 'zh-hant')
+
+    # 检查openai ft模型:
+
+    # 如何使用ft模型??
+    t =CallOpenAI("如何选择单位")
+    print(t)
+
+    # dic = loadXml("D:/Work/ZR_4/Zhurong/Assets/Export/Map/map_101/config/config_xml/MultipleLanguage_cn.xml")
+    # dic2 = {} #loadXml2("D:/Std/pythonProject1/Ch_Hant.xml")
+    # # translateDic(dic,'Ch_En.xml','ch','en')
+    # translateDic(dic, dic2, 'Ch_Hant.xml', 'zh-hans', 'zh-hant')
+
+    pass
 # input("结束")
