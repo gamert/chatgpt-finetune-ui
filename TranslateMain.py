@@ -45,7 +45,7 @@ def CallCompletion(text,model='text-davinci-003'):
     try:
         response = openai.Completion.create(
             model="text-davinci-003",
-            prompt="Translate this into English, " +text+"\n",
+            prompt="Translate this into English for tower defence mobile game, " +text+"\n",
             temperature=0.3,
             max_tokens=500,
             top_p=1.0,
@@ -196,10 +196,10 @@ if __name__ == '__main__':
 #    t =CalChatCompletion("他认识很多人。", model='ft:gpt-3.5-turbo-0613:personal::7u077XVx')   # He knows a lot of people.
 #    t =CalChatCompletion("如何选择单位", model='ft:gpt-3.5-turbo-0613:personal::7u077XVx')    #"How to select a channel is not obvious."
 
-    text = "光标放在指定单位或建筑，再点击选择键选择该单位或建筑"
-    t =CalChatCompletion(text, model='ft:gpt-3.5-turbo-0613:personal::7u077XVx')    #'Move the cursor to the unit you want to use, and press the left button.'
+    text = "或按住选择键后，出现选择框，滑动光标，选中所有光标经过的单位，滑动选择不会选中建筑，选择框的放大尺寸速度和形状可以在设置中设置"
+    # t =CalChatCompletion(text, model='ft:gpt-3.5-turbo-0613:personal::7u077XVx')    #'Move the cursor to the unit you want to use, and press the left button.'
     # 使用text模型:
-    #t =CallCompletion(text, model='text-davinci-003')   # '\nPlace the cursor on the designated unit or building, then click the select key to select the unit or building.'
+    t =CallCompletion(text, model='text-davinci-003')   # '\nPlace the cursor on the designated unit or building, then click the select key to select the unit or building.'
     print(t)
 
     # dic = loadXml("D:/Work/ZR_4/Zhurong/Assets/Export/Map/map_101/config/config_xml/MultipleLanguage_cn.xml")
