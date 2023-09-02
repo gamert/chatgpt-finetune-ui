@@ -3,28 +3,65 @@ from xml.dom.minidom import parse
 import time
 import requests
 import openai
-# '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'
-# "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"
-openai.api_key = "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"
+import os
 
+apikey_fn = "./apikey.txt"
+if os.path.exists(apikey_fn):
+    with open(apikey_fn, 'rt', encoding='utf-8') as f:
+        openai.api_key = f.readline().strip()
+else:
+    openai.api_key = "sk-"
 
 # 需要对比测试FineTune和不FT的结果？
-def CallOpenAI(text, model, temperature=0.5, frequency_penalty=0.0):
-    response = openai.Completion.create(
-        model=model,  # 'ft:gpt-3.5-turbo-0613:personal::7u077XVx' 'text-davinci-003',
-        prompt=text,    #   prompt="Translate this into English,\n" + text + "\n",
-        temperature=temperature,
-        max_tokens=500,
-        top_p=1.0,
-        frequency_penalty=frequency_penalty,
-        presence_penalty=0.0,
-    )
-    return response.choices[0].text
+# openai.error.InvalidRequestError: 'messages' is a required property
+    # "choices": [
+    #     {
+    #         "message": {
+    #             "role": "assistant",
+    #             "content": "起草一封电子邮件或其他写作材料。"
+    #         },
+    #         "finish_reason": "stop",
+    #         "index": 0
+    #     }
+    # ]
+def CalChatCompletion(text, model, temperature=0.5, frequency_penalty=0.0):
+    try:
+        response = openai.ChatCompletion.create(
+            model=model,  # 'ft:gpt-3.5-turbo-0613:personal::7u077XVx' 'text-davinci-003',
+            #prompt=text,    #   prompt="Translate this into English,\n" + text + "\n",
+            messages=[
+                {"role": "system", "content": "你是一个中英文翻译器。"},
+                {"role": "user", "content": text}
+            ]
+        )
+        return response.choices[0].message.content.strip()
+    except Exception as e:
+        print("CalChatCompletion", e)
+    finally:
+        return ""
+
+# 对话模型
+def CallCompletion(text,model='text-davinci-003'):
+    try:
+        response = openai.Completion.create(
+            model="text-davinci-003",
+            prompt="Translate this into English, " +text+"\n",
+            temperature=0.3,
+            max_tokens=500,
+            top_p=1.0,
+            frequency_penalty=0.0,
+            presence_penalty=0.0
+        )
+        return response.choices[0].text.strip()
+    except Exception as e:
+        print("CallCompletion", e)
+    finally:
+        return ""
 
 # "text-davinci-003"
 # ft模型该如何call的语法?
 def CallTranslates(text):
-    return CallOpenAI(text, model='ft:gpt-3.5-turbo-0613:personal::7u077XVx', temperature=0.3)    #"text-davinci-003",
+    return CalChatCompletion(text, model='ft:gpt-3.5-turbo-0613:personal::7u077XVx', temperature=0.3)    #"text-davinci-003",
 
 # http://hf.co上架设的一个免费Google的API
 def translate(text, lan, tolan):
@@ -155,8 +192,14 @@ if __name__ == '__main__':
 
     # 检查openai ft模型:
 
-    # 如何使用ft模型??
-    t =CallOpenAI("如何选择单位")
+    # 如何使用ft模型
+#    t =CalChatCompletion("他认识很多人。", model='ft:gpt-3.5-turbo-0613:personal::7u077XVx')   # He knows a lot of people.
+#    t =CalChatCompletion("如何选择单位", model='ft:gpt-3.5-turbo-0613:personal::7u077XVx')    #"How to select a channel is not obvious."
+
+    text = "光标放在指定单位或建筑，再点击选择键选择该单位或建筑"
+    t =CalChatCompletion(text, model='ft:gpt-3.5-turbo-0613:personal::7u077XVx')    #'Move the cursor to the unit you want to use, and press the left button.'
+    # 使用text模型:
+    #t =CallCompletion(text, model='text-davinci-003')   # '\nPlace the cursor on the designated unit or building, then click the select key to select the unit or building.'
     print(t)
 
     # dic = loadXml("D:/Work/ZR_4/Zhurong/Assets/Export/Map/map_101/config/config_xml/MultipleLanguage_cn.xml")
