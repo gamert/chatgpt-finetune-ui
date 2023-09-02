@@ -56,6 +56,8 @@ if api_key.startswith('sk-'):
         if st.button("Get Fine-Tuning Job Detail") and job_id:
             job = openai.FineTuningJob.retrieve(job_id)
             response_display.write(job)
+            # 补充show 训练细节？
+            # openai api fine_tunes.results -i "ft-SSIJ4DsHFfp9LEtuHWyQcn5B"
 
         if st.button("List Job Events") and job_id:
             events = openai.FineTuningJob.list_events(id=job_id, limit=10)
@@ -65,4 +67,9 @@ if api_key.startswith('sk-'):
         if st.button("Cancel Job") and job_id:
             cancelled_job = openai.FineTuningJob.cancel(job_id)
             response_display.write(cancelled_job)
-        
+
+        # choose a file to
+        # file = st.file_uploader("Upload a file", accept_multiple_files=False)
+        if st.button("本地化file"):
+
+            pass
