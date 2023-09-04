@@ -12,6 +12,8 @@ if os.path.exists(apikey_fn):
 else:
     openai.api_key = "sk-"
 
+LangCode2Lang = {"En": "English", "Ja": "Japanese"}
+
 # 需要对比测试FineTune和不FT的结果？
 # openai.error.InvalidRequestError: 'messages' is a required property
     # "choices": [
@@ -26,26 +28,27 @@ else:
     # ]
 def CalChatCompletion(text, model, temperature=0.5, frequency_penalty=0.0):
     try:
+        messages = [
+            {"role": "system", "content": "你是一个中英文翻译器。"},
+            {"role": "user", "content": text}
+        ]
+        # num_tokens_from_messages
         response = openai.ChatCompletion.create(
             model=model,  # 'ft:gpt-3.5-turbo-0613:personal::7u077XVx' 'text-davinci-003',
             #prompt=text,    #   prompt="Translate this into English,\n" + text + "\n",
-            messages=[
-                {"role": "system", "content": "你是一个中英文翻译器。"},
-                {"role": "user", "content": text}
-            ]
+            messages=messages
         )
         return response.choices[0].message.content.strip()
     except Exception as e:
         print("CalChatCompletion", e)
-    finally:
         return ""
 
 # 对话模型
-def CallCompletion(text,model='text-davinci-003'):
+def CallCompletion(prompt,model='text-davinci-003'):
     try:
         response = openai.Completion.create(
-            model="text-davinci-003",
-            prompt="Translate this into English for tower defence mobile game, " +text+"\n",
+            model=model,
+            prompt=prompt,
             temperature=0.3,
             max_tokens=500,
             top_p=1.0,
@@ -55,8 +58,13 @@ def CallCompletion(text,model='text-davinci-003'):
         return response.choices[0].text.strip()
     except Exception as e:
         print("CallCompletion", e)
-    finally:
         return ""
+
+# lang: English Japanese
+def CallTrans(text,langCode = "En"):
+    lang = LangCode2Lang[langCode]
+    prompt = "Translate this into short and refined localization "+lang+" for tower defence mobile game usage, " + text + "\n",
+    return CallCompletion(prompt,model='text-davinci-003')
 
 # "text-davinci-003"
 # ft模型该如何call的语法?
@@ -196,10 +204,11 @@ if __name__ == '__main__':
 #    t =CalChatCompletion("他认识很多人。", model='ft:gpt-3.5-turbo-0613:personal::7u077XVx')   # He knows a lot of people.
 #    t =CalChatCompletion("如何选择单位", model='ft:gpt-3.5-turbo-0613:personal::7u077XVx')    #"How to select a channel is not obvious."
 
-    text = "或按住选择键后，出现选择框，滑动光标，选中所有光标经过的单位，滑动选择不会选中建筑，选择框的放大尺寸速度和形状可以在设置中设置"
+    # text = "或按住选择键后，出现选择框，滑动光标，选中所有光标经过的单位，滑动选择不会选中建筑，选择框的放大尺寸速度和形状可以在设置中设置"
+    text = "轮盘中心为锁定和解锁键，将任意一种单位集合或英雄拖入到轮盘中心即可将该类型锁定，同时该单位集合会显示绿色外框标识，锁定后的该单位集合不会被全选选中，再次拖入轮盘中心解除锁定状态"
     # t =CalChatCompletion(text, model='ft:gpt-3.5-turbo-0613:personal::7u077XVx')    #'Move the cursor to the unit you want to use, and press the left button.'
     # 使用text模型:
-    t =CallCompletion(text, model='text-davinci-003')   # '\nPlace the cursor on the designated unit or building, then click the select key to select the unit or building.'
+    t =CallTrans(text, "Ja")   # '\nPlace the cursor on the designated unit or building, then click the select key to select the unit or building.'
     print(t)
 
     # dic = loadXml("D:/Work/ZR_4/Zhurong/Assets/Export/Map/map_101/config/config_xml/MultipleLanguage_cn.xml")
